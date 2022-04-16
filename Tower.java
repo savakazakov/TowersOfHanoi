@@ -7,7 +7,7 @@ import java.awt.image.*;
  */
 public class Tower extends JButton 
 {
-	private int animationDelayMS=500;		// Speed of animation when auto-complete is turned on.
+	private int animationDelayMS = 500;		// Speed of animation when auto-complete is turned on.
 	private int towerHeight;			    // Number of disks on this tower.
 	private Disk[] disks;				    // Disks on this tower, in order (bottom to top).
 
@@ -39,13 +39,21 @@ public class Tower extends JButton
 		Tower via = otherTower(this, destination, towers);
 
 		// Logic for the movement of discs.
-
-
-		
-		// Update the GUI. Do this in the terminating condition...
-		this.repaint();
-		destination.repaint();
-		this.animationDelay();
+		if(disksToMove == 1)
+		{
+			Disk d = this.removeDisk();
+			destination.addDisk(d);
+			// Update the GUI. Do this in the terminating condition...
+			this.repaint();
+			destination.repaint();
+			this.animationDelay();
+		}
+		else
+		{
+			this.move(via, disksToMove-1, towers);
+			this.move(destination, 1, towers);
+			via.move(destination, disksToMove-1, towers);
+		}
 	}
 
 	/**
