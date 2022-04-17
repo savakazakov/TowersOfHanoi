@@ -25,6 +25,25 @@ public class Tower extends JButton
 		this.towerHeight = 0;
 	}
 
+	/** 
+	 * Accessor method for the disks array.
+	 * @return Disk[]
+	 */
+	public Disk[] getDisks()
+	{
+		return disks;
+	}
+
+	
+	/** 
+	 * Mutator method for the disks array.
+	 * @param disks
+	 */
+	public void setDisks(Disk[] disks)
+	{
+		this.disks = disks;
+	}
+
 	/**
 	 * Move the given number of disks from this tower to the tower specified, without
 	 * breaking the rules of the puzzle.
@@ -126,9 +145,7 @@ public class Tower extends JButton
 	{
 		try {
 			Thread.sleep(animationDelayMS);
-		} 
-		catch (Exception e)
-		{}
+		} catch (Exception e) {}
 	}
 
 	/**
@@ -145,14 +162,14 @@ public class Tower extends JButton
 	 * Paint method. Overrides paint method to draw the tower and disks.
 	 * @param gr. The graphcis context on which to draw the towers and disks.
 	 */
-	public void paint (Graphics gr)
+	public void paint(Graphics gr)
 	{
 		BufferedImage img = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = img.createGraphics();
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		synchronized (this)
+		synchronized(this)
 		{
 			int width = this.getWidth()/20;
 			int height = (int)(this.getHeight() * 0.9);
@@ -160,7 +177,7 @@ public class Tower extends JButton
 			g.clearRect(0,0,getWidth(),getHeight());
 
 			g.setColor(Color.GRAY);
-			g.fill3DRect(this.getWidth()/2-width/2, this.getHeight()-height, width, height,true);
+			g.fill3DRect(this.getWidth()/2-width/2, this.getHeight()-height, width, height, true);
 
 			for (int i = 0; i < towerHeight; i++)
 				disks[i].drawOn(g, i, this);

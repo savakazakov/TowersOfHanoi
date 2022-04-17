@@ -4,7 +4,7 @@ import java.awt.*;
  * This class represents a single disk in a simulation of the towers of Hanoi puzzle.
  * @see Tower
  */
-public class Disk 
+public class Disk implements Comparable
 {
 	private Color colour;			    // The colour of this disk.
 	private boolean highlighted;		// Whether or not the disk is highlighted in the GUI.
@@ -51,10 +51,26 @@ public class Disk
 	 */
 	public void drawOn (Graphics g, int i, Tower t)
 	{
-		int startx = t.getWidth()/2-width/2;
-		int starty = t.getHeight()-((i+1)*height);
+		int startx = t.getWidth() / 2 - width / 2;
+		int starty = t.getHeight() - ((i+1) * height);
 	
 		g.setColor(highlighted ? Color.RED : colour);
-		g.fill3DRect(startx, starty, width, height,true);
+		g.fill3DRect(startx, starty, width, height, true);
+	}
+
+	/**
+	 * An override used to sort the Collection of Disks.
+	 * @param o
+	 * @return Returns a negative integer, zero, or a positive integer 
+	 * as this object is less than, equal to, or greater than the specified object.
+	 */
+	@Override
+	public int compareTo(Object o)
+	{
+		// FIXME some code smells. Casting.
+
+		// Have the disks in reverse order.
+		// I.e. wider disk are stored first.
+		return ((Disk)o).width - this.width;
 	}
 }
