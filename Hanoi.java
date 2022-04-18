@@ -1,18 +1,24 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 import javax.swing.*;
 
 public class Hanoi extends JFrame implements ActionListener, Runnable
 {
-	private Tower[] towers = new Tower[3];
+	private static final int TOWER_COUNT = 3;
+
+	private Tower[] towers = new Tower[TOWER_COUNT];
 	private JButton moveButton = new JButton("Move");
 	private JButton randomiseButton = new JButton("Randomise");
 	private Tower selectedTower = null;
+
+	// An ordered map to store the disks and their tower.
+	private TreeMap<Disk, Integer> map;
 
 	public Hanoi(int numberOfDisks, int animationDelay)
 	{
@@ -25,7 +31,7 @@ public class Hanoi extends JFrame implements ActionListener, Runnable
 		JPanel towerPanel = new JPanel();
 		JPanel buttonPanel = new JPanel();
 
-		towerPanel.setLayout(new GridLayout(1,3));
+		towerPanel.setLayout(new GridLayout(1, TOWER_COUNT));
 		p.setLayout(new BorderLayout());
 		p.add(towerPanel, BorderLayout.CENTER);
 		buttonPanel.setLayout(new GridLayout(1,2));
@@ -35,44 +41,49 @@ public class Hanoi extends JFrame implements ActionListener, Runnable
 		randomiseButton.addActionListener(this);
 		p.add(buttonPanel, BorderLayout.SOUTH);
 		this.setContentPane(p);
+		
+		// Initialise the map.
+		map = new TreeMap<>();
 
 		// Create the towers
-		for(int i=0; i<3; i++)
+		for(int i = 0; i < TOWER_COUNT; i++)
 		{
 			towers[i] = new Tower(numberOfDisks, animationDelay);
-			towers[i].setSize((this.getWidth()-50)/3, this.getHeight()-80);
+			towers[i].setSize((this.getWidth() - 50) / TOWER_COUNT, this.getHeight() - 80);
 			towerPanel.add(towers[i]);
 
 			towers[i].addActionListener(this);
 		}
 
-		// Create the disks
+		// Create the disks.
 		for(int i = 0; i < numberOfDisks; i++)
 		{
 			float ratio = (float)(numberOfDisks-i) / (float)numberOfDisks;
 			float brightness = 0.2f + ratio * 0.8f;
 
-			towers[0].addDisk(new Disk(new Color(0, brightness, 0), (int)((float)towers[0].getWidth() * ratio), diskHeight));
-		}
+			Disk d = new Disk(new Color(0, brightness, 0), (int)((float)towers[0].getWidth() * ratio), diskHeight);
 
-		// for(int i = 0; i < towers.length; i++)
-		// {
-		// 	System.out.println(i + " " + towers[i].getDisks().length);
-		// 	for(int j = 0; j < towers[i].getDisks().length; j++)
-		// 	{
-		// 		System.out.println(towers[i].getDisks()[j]);
-		// 	}
-		// }
+			map.put(d, 0);
+			towers[0].addDisk(d);
+		}
 
 		// Make everything visible
 		this.setVisible(true);
 	}
 
+	public HashMap<Disk, Integer> creatMap()
+	{
+		
+		return null;
+	}
+
 	public void actionPerformed(ActionEvent e)
 	{
+		// XXX remove this from here.
+
 		JButton b = (JButton)e.getSource();
 
-		moveButton.setEnabled(false);
+		// moveButton.setEnabled(false);
 
 		if(b == moveButton)
 		{
@@ -81,33 +92,37 @@ public class Hanoi extends JFrame implements ActionListener, Runnable
 		}
 		else if(b == randomiseButton)
 		{
-			// An ordered collection to store the disks
-			TreeSet<Disk> set = new TreeSet<>();
+			// Get the number of disks in each tower.
+			// int numberOfDisks = towers[0].getDisks().length;
 
 			// Remove all the disks from all the towers.
-			// And add them to a sorted collection.
 			for(int i = 0; i < towers.length; i++)
 			{
 				Disk d = towers[i].removeDisk();
 				while(d != null)
-				{
-					set.add(d);
 					d = towers[i].removeDisk();
-				}
 			}
 
 			// Instantiate the random generator.
 			Random rand = new Random();
 			int randNum;
 
-			Iterator<Disk> itr = set.iterator();
+			// Instantiate an iterator for the map.
+			Iterator<Disk> itr = map.descendingKeySet().iterator();
       
 			while(itr.hasNext())
 			{
 				// FIXME Cast code smell.
-				randNum = rand.nextInt(3);
-				towers[randNum].addDisk((Disk) itr.next());
+				Disk d = (Disk) itr.next();
+
+				// Generate a random tower
+				randNum = rand.nextInt(TOWER_COUNT);
+
+				// Update the map and add the disk to the tower.
+				map.replace(d, randNum);
+				towers[randNum].addDisk(d);
 			}
+			System.out.println(map);
 		}
 		else 
 		{
@@ -145,7 +160,8 @@ public class Hanoi extends JFrame implements ActionListener, Runnable
 	public void run()
 	{
 		// Perform a recursive move of all the disks from tower0 to tower2...
-        towers[0].move(towers[2],towers[0].getTowerHeight(), towers);
+        // towers[0].move(towers[2], towers[0].getTowerHeight(), towers);
+		towers[0].solve(towers[2], map.size(), towers, map);
 	}
 	
 	public static void main(String[] args)
@@ -171,13 +187,12 @@ public class Hanoi extends JFrame implements ActionListener, Runnable
 			return;
 		}
 
-
 		Hanoi h = new Hanoi(disks, speed);
 	}
 
 	private static void usage()
 	{
-			System.out.println("Usage: java Hanoi <number of disks> [animation_speed (ms)]\n\n");
+		System.out.println("Usage: java Hanoi <number of disks> [animation_speed (ms)]\n\n");
 	}
 }
 

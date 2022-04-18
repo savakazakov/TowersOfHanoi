@@ -71,6 +71,6 @@ public class Disk implements Comparable
 
 		// Have the disks in reverse order.
 		// I.e. wider disk are stored first.
-		return ((Disk)o).width - this.width;
+		return this.width - ((Disk)o).width;
 	}
 }

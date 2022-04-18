@@ -1,6 +1,10 @@
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.image.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeMap;
 
 /**
  * This class models a single Tower in a Towers of Hanoi Simulation.
@@ -26,17 +30,14 @@ public class Tower extends JButton
 	}
 
 	/** 
-	 * Accessor method for the disks array.
 	 * @return Disk[]
 	 */
 	public Disk[] getDisks()
 	{
 		return disks;
 	}
-
 	
 	/** 
-	 * Mutator method for the disks array.
 	 * @param disks
 	 */
 	public void setDisks(Disk[] disks)
@@ -73,6 +74,68 @@ public class Tower extends JButton
 			this.move(destination, 1, towers);
 			via.move(destination, disksToMove-1, towers);
 		}
+	}
+
+	/**
+	 * This assumes it's called on the tower with the biggest disk at the bottom.
+	 */
+	public void solve(Tower destination, int disksToMove, Tower[] towers, TreeMap<Disk, Integer> map)
+	{
+		// Work out the spare tower.
+		Tower via = otherTower(this, destination, towers);
+
+		// The final(smallest) disk to be placed on top.
+		if(disksToMove == 1)
+		{
+			// FIXME Can be optimised.
+			Disk d = this.removeDisk();
+			destination.addDisk(d);
+
+			// Update the GUI. Do this in the terminating condition...
+			this.repaint();
+			destination.repaint();
+			this.animationDelay();
+		}
+		else
+		{
+			// Optimisation.
+			// If there are already disks at the of the destination, 
+			// that are already in place and in the correct order.
+			// System.out.println(disksToMove - 1);
+			// System.out.println(destination.getDisks()[ disksToMove - 1 ]);
+			// System.out.println(destination.getDisks()[ disksToMove - 1 ]);
+			// while( towers[ map.get( (Disk) map.keySet().toArray()[disksToMove - 1] ) ] == destination )
+			System.out.println(map);
+			System.out.println(disksToMove - 1 + "disksToMove");
+			System.out.println((int) map.values().toArray()[disksToMove -1]);
+
+			// while( towers[ (int) map.values().toArray()[disksToMove - 1] ] == destination )
+			// {
+			// 	disksToMove--;
+			// }
+
+			System.out.println("end");
+
+			// Find the tower with the next biggest disk.
+			Tower nextTower;
+
+			
+
+			// this.solve(via, disksToMove-1, towers, map);
+			// this.solve(destination, 1, towers, map);
+			// via.solve(destination, disksToMove, towers, map);
+
+			// // this.solve(via, disksToMove, towers, map);
+			// // map.higherKey(key)
+			// this.move(via, disksToMove-1, towers);
+			// this.move(destination, 1, towers);
+			// via.move(destination, disksToMove-1, towers);
+		}
+	}
+
+	public Disk findDisk(int disksToMove, HashMap<Disk, Integer> map)
+	{
+		return (Disk) map.keySet().toArray()[disksToMove - 1];
 	}
 
 	/**
